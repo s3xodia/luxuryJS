@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>luxuryJS ( requestframe translateX )</title>
+    <style>
+
+        * { user-select: none }
+
+        html, body 
+        {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            background: #000000;
+            user-select: none;
+        }
+
+        #carousel
+        {
+            position: relative;
+            display: flex;
+            /* REGULAMOS A GUSTO CUALQUIER EL TAMAÑO DEL CAROUSEL */
+            /* flex: 1; height: 100%; */
+            /* width: 20%; height: 20%; */
+            width: 100%; height: 50%;
+            background: transparent;
+            border-top: 1px solid white;
+            border-bottom: 1px solid white;
+            /* overflow: hidden; */
+        }
+  
+        img 
+        {
+            height: 100%;
+            width: 100%;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            pointer-events: none;
+            user-select: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="carousel">
+
+        <div id="home">
+            <img src="img/primero.jpg">
+        </div>
+
+        <div>
+            <img src="img/segundo.jpg">
+        </div>
+
+        <div>
+            <img src="img/tercero.jpg">
+        </div>
+
+        <div>
+            <img src="img/cuarto.jpg">
+        </div>
+
+    </div>
+
+    <h1 id="primero" onclick="arrowdirection(true)" style="position: absolute; top: 2.5em; left: 50%; color: white;">...</h1>
+    <h1 id="segundo" onclick="arrowdirection(false)" style="position: absolute; top: 4em; left: 50%; color: white;">...</h1>
+
+</body>
+
+<!-- @sexodia:
+
+    Este es uno de mis proyectos de carrusel. Tengo varios ya hechos con diferentes metodos, 
+    pero este es el primero que comparto. Aunque ya existen varias bibliotecas de carousel con 
+    javascript, este lo hice desde cero para aprender un poco más. Sin embargo, he notado que ninguna
+    de las bibliotecas de carruseles en JavaScript existentes ofrece una funcionalidad específica que estoy 
+    buscando: osea la capacidad de navegar directamente de un índice a otro sin mostrar los elementos intermedios.
+
+    OBJETIVOS:
+    - Lograr mayor fluidez como un carousel de android nativo (como embla carousel).
+    - Lograr ir de un elemento a otro sin mostrar elementos intermedios (como 'facebookAPK').
+    - Lograr gestos touch/ mouse de carousel como android nativo (como 'facebookAPK', 'tiktokAPK'.. etc).
+-->
+
+<script>
+
+    const div = 'carousel'
+
+
+    //CREACION DEL CAROUSEL
+    //CREACION DEL CAROUSEL
+    //CREACION DEL CAROUSEL
+    //CREACION DEL CAROUSEL
+    //CREACION DEL CAROUSEL
+    const carousel = document.getElementById(div);
+
+    function crearswp()
+    {
+        //creamos un elemento swp y le damos propiedades css
+        const swp = document.createElement('div');
+        swp.style.position = 'absolute';
+        swp.style.width = '100%';
+        swp.style.height = '100%';
+        swp.style.display = 'flex';
+        swp.style.transform = 'translateX(0px)';
+
+        //creamos un array del carousel
+        const cArray = Array.from(carousel.children)
+
+        //movemos cada hijo del carousel al nuevo elemento creado "swp"
+        for (const elm of cArray)
+        {
+            swp.appendChild(elm);
+        }
+
+        //mostramos al elemento creado "swp" dentro del carousel como unico hijo
+        carousel.appendChild(swp);
+
+        //para cada hijo del "swp" le damos un ancho y alto completo
+        Array.from(swp.children).forEach(e =>
+        {
+            e.style.minWidth = '100%';
+            e.style.minHeight = '100%';
+        });
+
+        //retornamos el nuevo carousel "swp"
+        return swp;
+    }
+
+
+    //despues de crear el carousel usamos estas variables para empezar su uso
+    const onswp = crearswp(); //asignamos el "swp" creado en "onswp"
+    const inswp = Array.from(onswp.children);
+
+    //evento de prueba solamente lo agregue para mover el carousel cuando aun no tenia los eventos mouse/touch
+    document.addEventListener('keydown', function(e)
+    {
+        //al presionar tecla flechas del teclado
+        if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft'))
+        {
+            arrowdirection(e.key === 'ArrowRight' ? true : false);
+        } 
+    });
+
+
+
+    //MOVER CAROUSEL CON DIRECCIONES
+    //MOVER CAROUSEL CON DIRECCIONES
+    //MOVER CAROUSEL CON DIRECCIONES
+    //MOVER CAROUSEL CON DIRECCIONES
+    //MOVER CAROUSEL CON DIRECCIONES
+    let index = 0;
+    function arrowdirection(dr, ms = 580)
+    {
+        //evitamos ir mas alla del limite del carousel
+        if (index === 0 && !dr || index === inswp.length - 1 && dr)
+        {
+            return renderAnm(-(onswp.offsetWidth * index), 600);
+        }
+
+        cancelAnimationFrame(swpAnm); //cancelar animacion (lo puse porque si)
+
+        //determinamos el valor del index segun el "dr" o direction recibida..
+        //la direccion si es 'true' es adelante, si es 'false' es hacia atras
+        index = dr ? Math.min(index + 1, inswp.length - 1) : Math.max(index - 1, 0);
+
+        //finalmente obtenemos el ancho del carusel y lo multiplicamos por el index
+        //para determinar el translateX, este valor lo pasamos al renderizador para animarlo
+        const target = -(onswp.offsetWidth * index);
+
+        // primero.textContent = target;
+        renderAnm(target, ms);
+    }
+
+
+    //MOVETO O SALTAR DE UN ELEMENTO A OTRO
+    //MOVETO O SALTAR DE UN ELEMENTO A OTRO
+    //MOVETO O SALTAR DE UN ELEMENTO A OTRO
+    //MOVETO O SALTAR DE UN ELEMENTO A OTRO
+    //MOVETO O SALTAR DE UN ELEMENTO A OTRO
+    function moveTO(t, ms)
+    {
+        //no implementado aun, la idea esta en la libreria "luxuryJS (CSS-based)""
+    }
+
+
+
+    //'si tan solo alguien supiera la tecnica que usa emblaCarousel (fluido en pantallas 60hz):v xd'
+    //MOTOR DE ANIMACION (aveces provoca lag falta optimizar! especialmente en moviles 60hz)
+    //MOTOR DE ANIMACION (aveces provoca lag falta optimizar! especialmente en moviles 60hz)
+    //MOTOR DE ANIMACION (aveces provoca lag falta optimizar! especialmente en moviles 60hz)
+    //MOTOR DE ANIMACION (aveces provoca lag falta optimizar! especialmente en moviles 60hz)
+    //MOTOR DE ANIMACION (aveces provoca lag falta optimizar! especialmente en moviles 60hz)
+    let swpAnm;
+    let positionX = 0;
+    function renderAnm(t, ms)
+    {
+        const targetX = t;
+        const speedAnm = ms;
+        const currentX = enbordePx();
+        const primerTime = performance.now();
+
+        //suavizamos la animacion usando esta funcion (   no es el tipo de animacion que busco :c   )
+        const customAnm = (t) => 
+        {
+            const timepoLinear = 0.9;
+            const linearT = t < timepoLinear ? t / timepoLinear : 1;
+            const easedT = 1 - Math.pow(1 - linearT, 5); 
+
+            return easedT;
+        };
+
+        //motor de animacion (  falta pulir esto, solo es una version basica para animarlo  )
+        function swpframe()
+        {
+            const newtime = performance.now();
+            const elapsed = newtime - primerTime;
+            const progress = elapsed / speedAnm;
+            
+            positionX = currentX + (targetX - currentX) * customAnm(progress);
+
+            onswp.style.transform = `translateX(${positionX}px)`;
+
+            if (progress < 1)
+            {
+                swpAnm = requestAnimationFrame(swpframe);
+            } else
+                {
+                    cancelAnimationFrame(swpAnm);
+                }
+        }
+
+        swpAnm = requestAnimationFrame(swpframe);
+    }    
+
+    //obtenemos el translateX del elemento basandonos en el primer elemento y el contenedor principal
+    //esta funcion es bastante util para el "renderAnm()", especialmente despues de usar un arrastre mouse/touch
+    function enbordePx() 
+    {
+        const enfocado = inswp[0];
+        const rectEnfocado = enfocado.getBoundingClientRect();
+        const rectContainer = carousel.getBoundingClientRect();
+        const distanciaEnPx = rectEnfocado.left - rectContainer.left;
+
+        return distanciaEnPx;
+    }
+
+
+
+
+
+
+
+
+
+    //EVENTOS DE ARRASTRE Y PAUSE DURANTE ANIMACION
+    //EVENTOS DE ARRASTRE Y PAUSE DURANTE ANIMACION
+    //EVENTOS DE ARRASTRE Y PAUSE DURANTE ANIMACION
+    //EVENTOS DE ARRASTRE Y PAUSE DURANTE ANIMACION
+    //EVENTOS DE ARRASTRE Y PAUSE DURANTE ANIMACION
+    onswp.addEventListener('mousedown', start);  
+    onswp.addEventListener('touchstart', start);
+
+    let startX1 = null;
+    let startX2 = null;
+    let umbralX = 3;
+    let sensibilidad = null;
+
+    let primerTime = null;
+    let pauserframe = null;
+    let isfreezed = false;
+
+    //mousedown/touchstart:
+    function start(e)
+    {
+        primerTime = performance.now();
+        startX1 = e.clientX || e.touches[0].clientX;
+
+        cronometroAnm(); //inicamos el cronometro
+
+        //agregamos los eventos necesarios para mover y soltar el arrastre
+        onswp.addEventListener('mousemove', move);
+        onswp.addEventListener('mouseup', stop);
+        onswp.addEventListener('mouseleave', stop);
+        onswp.addEventListener('touchmove', move);
+        onswp.addEventListener('touchend', stop);
+        onswp.addEventListener('touchcancel', stop);
+    }
+
+    //cronometro que ejecuta una funcion al llegar a un tiempo determinado (osea 30ms en este caso)
+    function cronometroAnm()
+    {
+        const currentTime = performance.now();
+        const result = Math.round(currentTime - primerTime);
+        primero.textContent = result;
+
+        if (result > 30) return freezeAnm();
+
+        pauserframe = requestAnimationFrame(cronometroAnm);
+    }
+
+    //detiene al cronometroAnm y a la animacion del carousel
+    function freezeAnm()
+    {
+        cancelAnimationFrame(pauserframe);
+        cancelAnimationFrame(swpAnm);
+        isfreezed = true; //indicada que se ha congelado usando el cronometroAnm
+    }
+
+
+
+    //mousemove/touchmove
+    function move(e)
+    {
+        //cancelamos el cronometro para evitar que aun no pause la animacion
+        cancelAnimationFrame(pauserframe);
+
+        const moveX = (e.clientX || e.touches[0].clientX) - startX1;
+        
+        //si moveX es mayor que el umbral tonces iniciamos la coordenada startX2
+        if (Math.abs(moveX) >= umbralX && !startX2)
+        {
+            //si la animacion no ha sido congelada por el cronometro entonces detener aqui y bajamos la sensibilidad de arrastre
+            if(!isfreezed)
+            {
+                sensibilidad = 0.8
+                cancelAnimationFrame(swpAnm);
+            } else 
+                {
+                    sensibilidad = 1; //sensiblidad standard
+                }
+
+            startX2 = (e.clientX || e.touches[0].clientX);
+        }
+
+        //cuando la coordenada es iniciada tambien es el movimiendo
+        if (startX2)
+        {
+            const currentX = (e.clientX || e.touches[0].clientX) - startX2;
+            const translateX = positionX + (sensibilidad * currentX);
+
+            segundo.textContent = translateX;
+
+            onswp.style.transform = `translateX(${translateX}px)`;
+        }
+    }
+
+
+
+    //mouseup/touchend: 
+    function stop(e)
+    {
+        //asegurarnos de detener al cronometro y reiniciamos la variable que indica si se ha pausado el carousel por el cronometro
+        cancelAnimationFrame(pauserframe);
+        isfreezed = false;
+
+        //pequeño bloque de codigo solo para ver si funciona (remplazarlo por logica gestos de arrastre)
+        const endX = e.clientX || e.changedTouches[0].clientX;
+        const deltaX = endX - startX1;
+
+        if (Math.abs(deltaX) >= 10) 
+        {
+            if (deltaX > 0) 
+            {
+                arrowdirection(false);
+            } else 
+                {
+                    arrowdirection(true);
+                }
+        } else 
+            {
+                renderAnm(-(onswp.offsetWidth * index), 600)
+            }
+        
+
+        //reiniciamos coordenadas y removemos eventos touch/mouse
+        startX1 = null;
+        startX2 = null;
+        onswp.removeEventListener('mousemove', move);
+        onswp.removeEventListener('mouseup', stop);
+        onswp.removeEventListener('mouseleave', stop);
+        onswp.removeEventListener('touchmove', move);
+        onswp.removeEventListener('touchend', stop);
+        onswp.removeEventListener('touchcancel', stop);
+    }
+
+</script>
+
+</html>
